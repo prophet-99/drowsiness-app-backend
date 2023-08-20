@@ -5,10 +5,18 @@ import com.prophet99.drowsinessdetection.models.dto.UserWithIncidentDTO;
 import com.prophet99.drowsinessdetection.services.IUserService;
 import com.prophet99.drowsinessdetection.utils.MessageResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 
@@ -76,6 +84,53 @@ public class UserController {
         HttpStatus.CONFLICT
       );
     } catch (Exception ex) {
+      return new ResponseEntity<MessageResponseUtil>(
+        new MessageResponseUtil(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @PostMapping(value = "/{dni}/photo")
+  public ResponseEntity<?> saveUserPhoto(
+    @PathVariable(value = "dni") String dni,
+    @RequestParam(value = "file") MultipartFile file
+  ) {
+    try {
+      if (Objects.isNull(userService.findByDni(dni))) return new ResponseEntity<MessageResponseUtil>(
+        new MessageResponseUtil(
+          String.format("No existe un usuario con el DNI: %s", dni),
+          HttpStatus.CONFLICT.value()
+        ),
+        HttpStatus.CONFLICT
+      );
+      userService.savePhoto(dni, file);
+      return new ResponseEntity<MessageResponseUtil>(
+        new MessageResponseUtil("Foto guardada con éxito",  HttpStatus.CREATED.value()),
+        HttpStatus.CREATED
+      );
+    } catch (Exception ex) {
+      return new ResponseEntity<MessageResponseUtil>(
+        new MessageResponseUtil(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @GetMapping(value = "/photo/{fileName:.+}")
+  public ResponseEntity<?> getPhoto(@PathVariable(value = "fileName") String fileName) {
+    Path filePath = Paths.get("userphotos").resolve(fileName);
+    Resource resource;
+    try {
+      resource = new UrlResource(filePath.toUri());
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(switch (fileName.split("\\.")[1]) {
+        case "jpg", "jpeg" -> MediaType.IMAGE_JPEG;
+        case "png" -> MediaType.IMAGE_PNG;
+        default -> MediaType.ALL;
+      });
+      return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
+    } catch (MalformedURLException ex) {
       return new ResponseEntity<MessageResponseUtil>(
         new MessageResponseUtil(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
         HttpStatus.INTERNAL_SERVER_ERROR

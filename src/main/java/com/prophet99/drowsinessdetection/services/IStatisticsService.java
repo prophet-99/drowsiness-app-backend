@@ -8,5 +8,6 @@ import java.util.List;
 public interface IStatisticsService {
   Statistics save(Statistics statistics);
   List<StatisticsWithUserDTO> findAll(String searchParam);
+  List<StatisticsWithUserDTO> findByUserDNI(String userDNI, String searchParam);
   StatisticsWithUserDTO findById(String id);
 }

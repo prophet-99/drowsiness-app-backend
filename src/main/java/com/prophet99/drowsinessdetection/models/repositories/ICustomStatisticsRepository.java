@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface ICustomStatisticsRepository {
   List<StatisticsWithUserDTO> findAll(String searchParam);
+  List<StatisticsWithUserDTO> findByUserDNI(String userDNI, String searchParam);
   Optional<StatisticsWithUserDTO> findById(String id);
   Statistics save(Statistics statistics);
 }

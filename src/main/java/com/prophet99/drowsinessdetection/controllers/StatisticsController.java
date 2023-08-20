@@ -40,6 +40,23 @@ public class StatisticsController {
     }
   }
 
+  @GetMapping("/userDNI/{userDNI}")
+  public ResponseEntity<?> finStatisticsByUserDni(
+    @PathVariable("userDNI") String userDNI,
+    @RequestParam(value = "search", required = false) String searchParam
+  ) {
+    try {
+      return new ResponseEntity<List<StatisticsWithUserDTO>>(
+        statisticsService.findByUserDNI(userDNI, searchParam), HttpStatus.OK
+      );
+    } catch (Exception ex) {
+      return new ResponseEntity<MessageResponseUtil>(
+        new MessageResponseUtil(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
   @GetMapping(value = "/id/{id}")
   public ResponseEntity<?> findByStatisticsId(@PathVariable(value = "id") String id) {
     try {

@@ -37,6 +37,12 @@ public class StatisticsServiceImpl implements IStatisticsService {
 
   @Transactional(readOnly = true)
   @Override
+  public List<StatisticsWithUserDTO> findByUserDNI(String userDNI, String searchParam) {
+    return customStatisticsRepository.findByUserDNI(userDNI, searchParam);
+  }
+
+  @Transactional(readOnly = true)
+  @Override
   public StatisticsWithUserDTO findById(String id) {
     return customStatisticsRepository.findById(id).orElse(null);
   }
