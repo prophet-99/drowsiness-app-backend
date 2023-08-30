@@ -2,7 +2,6 @@ package com.prophet99.drowsinessdetection.services.impl;
 
 import com.prophet99.drowsinessdetection.models.documents.Statistics;
 import com.prophet99.drowsinessdetection.models.dto.StatisticsWithUserDTO;
-import com.prophet99.drowsinessdetection.models.mappers.StatisticsWithUserMapper;
 import com.prophet99.drowsinessdetection.models.repositories.ICustomStatisticsRepository;
 import com.prophet99.drowsinessdetection.models.repositories.IStatisticsRepository;
 import com.prophet99.drowsinessdetection.services.IStatisticsService;
