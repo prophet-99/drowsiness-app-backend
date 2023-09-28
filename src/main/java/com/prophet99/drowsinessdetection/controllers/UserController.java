@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -70,6 +71,7 @@ public class UserController {
     }
   }
 
+  @Secured(value = "ROLE_ADMIN")
   @PostMapping(value = "")
   public ResponseEntity<?> saveUser(@RequestBody User user) {
     try {
@@ -91,6 +93,7 @@ public class UserController {
     }
   }
 
+  @Secured(value = "ROLE_ADMIN")
   @PostMapping(value = "/{dni}/photo")
   public ResponseEntity<?> saveUserPhoto(
     @PathVariable(value = "dni") String dni,
@@ -138,6 +141,7 @@ public class UserController {
     }
   }
 
+  @Secured(value = "ROLE_ADMIN")
   @PutMapping(value = "")
   public ResponseEntity<?> updateUser(@RequestBody User user) {
     try {
@@ -159,6 +163,7 @@ public class UserController {
     }
   }
 
+  @Secured(value = "ROLE_ADMIN")
   @DeleteMapping(value = "/dni/{dni}")
   public ResponseEntity<?> disableUser(@PathVariable(value = "dni") String dni) {
     try {
