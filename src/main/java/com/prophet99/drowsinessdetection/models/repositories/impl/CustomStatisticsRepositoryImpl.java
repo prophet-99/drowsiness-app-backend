@@ -202,4 +202,10 @@ public class CustomStatisticsRepositoryImpl implements ICustomStatisticsReposito
     statistics.setRegisterDate(LocalDateTime.now());
     return mongoTemplate.save(statistics);
   }
+
+  @Override
+  public void deleteById(String id) {
+    Optional<StatisticsWithUserDTO> statisticsRefOpt = findById(id);
+    if (!statisticsRefOpt.isEmpty()) mongoTemplate.remove(statisticsRefOpt);
+  }
 }

@@ -21,17 +21,17 @@ public class AuthController {
   }
 
   @PostMapping(value = "")
-  public ResponseEntity<MessageResponseUtil> authByUserAndPassword(@RequestBody AuthRequest authRequest) {
+  public ResponseEntity<?> authByUserAndPassword(@RequestBody AuthRequest authRequest) {
     try {
       authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
       );
-      return new ResponseEntity<MessageResponseUtil>(
+      return new ResponseEntity<>(
         new MessageResponseUtil("Logueado con éxito", HttpStatus.OK.value()),
         HttpStatus.OK
       );
     } catch (Exception ex) {
-      return new ResponseEntity<MessageResponseUtil>(
+      return new ResponseEntity<>(
         new MessageResponseUtil(ex.getMessage(), HttpStatus.UNAUTHORIZED.value()),
         HttpStatus.UNAUTHORIZED
       );

@@ -1,7 +1,7 @@
 package com.prophet99.drowsinessdetection.controllers;
 
-import com.prophet99.drowsinessdetection.models.documents.Statistics;
 import com.prophet99.drowsinessdetection.models.dto.StatisticsWithUserDTO;
+import com.prophet99.drowsinessdetection.models.vo.StatisticsVO;
 import com.prophet99.drowsinessdetection.services.IStatisticsService;
 import com.prophet99.drowsinessdetection.services.IUserService;
 import com.prophet99.drowsinessdetection.utils.MessageResponseUtil;
@@ -31,9 +31,9 @@ public class StatisticsController {
   @GetMapping(value = "")
   public ResponseEntity<?> findAllStatistics(@RequestParam(value = "search", required = false) String searchParam) {
     try {
-      return new ResponseEntity<List<StatisticsWithUserDTO>>(statisticsService.findAll(searchParam), HttpStatus.OK);
+      return new ResponseEntity<>(statisticsService.findAll(searchParam), HttpStatus.OK);
     } catch (Exception ex) {
-      return new ResponseEntity<MessageResponseUtil>(
+      return new ResponseEntity<>(
         new MessageResponseUtil(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
         HttpStatus.INTERNAL_SERVER_ERROR
       );
@@ -46,11 +46,11 @@ public class StatisticsController {
     @RequestParam(value = "search", required = false) String searchParam
   ) {
     try {
-      return new ResponseEntity<List<StatisticsWithUserDTO>>(
+      return new ResponseEntity<>(
         statisticsService.findByUserDNI(userDNI, searchParam), HttpStatus.OK
       );
     } catch (Exception ex) {
-      return new ResponseEntity<MessageResponseUtil>(
+      return new ResponseEntity<>(
         new MessageResponseUtil(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
         HttpStatus.INTERNAL_SERVER_ERROR
       );
@@ -62,7 +62,7 @@ public class StatisticsController {
     try {
       StatisticsWithUserDTO stWithUser = statisticsService.findById(id);
       if (Objects.isNull(stWithUser)){
-        return new ResponseEntity<MessageResponseUtil>(
+        return new ResponseEntity<>(
           new MessageResponseUtil(
             String.format("No existe una estadística con el id: %s", id),
             HttpStatus.NOT_FOUND.value()
@@ -70,9 +70,9 @@ public class StatisticsController {
           HttpStatus.NOT_FOUND
         );
       }
-      return new ResponseEntity<StatisticsWithUserDTO>(stWithUser, HttpStatus.OK);
+      return new ResponseEntity<>(stWithUser, HttpStatus.OK);
     } catch (Exception ex) {
-      return new ResponseEntity<MessageResponseUtil>(
+      return new ResponseEntity<>(
         new MessageResponseUtil(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
         HttpStatus.INTERNAL_SERVER_ERROR
       );
@@ -80,13 +80,13 @@ public class StatisticsController {
   }
 
   @PostMapping(value = "")
-  public ResponseEntity<?> saveStatistics(@RequestBody Statistics statistics) {
+  public ResponseEntity<?> saveStatistics(@RequestBody StatisticsVO statisticsVO) {
     try {
-      if (Objects.isNull(statisticsService.findById(statistics.getId()))) {
-        if (Objects.isNull(userService.findByDni(statistics.getUserDNI()))) {
-          return new ResponseEntity<MessageResponseUtil>(
+      if (Objects.isNull(statisticsService.findById(statisticsVO.getId()))) {
+        if (Objects.isNull(userService.findByDni(statisticsVO.getUserDNI()))) {
+          return new ResponseEntity<>(
             new MessageResponseUtil(
-              String.format("No existe un usuario con DNI: %s", statistics.getUserDNI()),
+              String.format("No existe un usuario con DNI: %s", statisticsVO.getUserDNI()),
               HttpStatus.NOT_FOUND.value()
             ),
             HttpStatus.NOT_FOUND
@@ -97,17 +97,17 @@ public class StatisticsController {
           "/topic/statistics",
           "Nueva incidencia disponible"
         );
-        return new ResponseEntity<Statistics>(statisticsService.save(statistics), HttpStatus.CREATED);
+        return new ResponseEntity<>(statisticsService.save(statisticsVO.getStatisticsEntity()), HttpStatus.CREATED);
       }
-      return new ResponseEntity<MessageResponseUtil>(
+      return new ResponseEntity<>(
         new MessageResponseUtil(
-          String.format("Ya existe una estadística con el id: %s", statistics.getId()),
+          String.format("Ya existe una estadística con el id: %s", statisticsVO.getId()),
           HttpStatus.CONFLICT.value()
         ),
         HttpStatus.CONFLICT
       );
     } catch (Exception ex) {
-      return new ResponseEntity<MessageResponseUtil>(
+      return new ResponseEntity<>(
         new MessageResponseUtil(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
         HttpStatus.INTERNAL_SERVER_ERROR
       );

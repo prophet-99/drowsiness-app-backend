@@ -1,7 +1,7 @@
 package com.prophet99.drowsinessdetection.controllers;
 
 import com.prophet99.drowsinessdetection.models.documents.User;
-import com.prophet99.drowsinessdetection.models.dto.UserWithIncidentDTO;
+import com.prophet99.drowsinessdetection.models.vo.UserVO;
 import com.prophet99.drowsinessdetection.services.IUserService;
 import com.prophet99.drowsinessdetection.utils.MessageResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,12 +37,12 @@ public class UserController {
     @RequestParam(value = "search", required = false) String searchParam
   ) {
     try {
-      return new ResponseEntity<List<UserWithIncidentDTO>>(
+      return new ResponseEntity<>(
         userService.findAll(areActive, searchParam),
         HttpStatus.OK
       );
     } catch (Exception ex) {
-      return new ResponseEntity<MessageResponseUtil>(
+      return new ResponseEntity<>(
         new MessageResponseUtil(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
         HttpStatus.INTERNAL_SERVER_ERROR
       );
@@ -54,7 +54,7 @@ public class UserController {
     try {
       User userFound = userService.findByDni(dni);
       if (Objects.isNull(userFound)) {
-        return new ResponseEntity<MessageResponseUtil>(
+        return new ResponseEntity<>(
           new MessageResponseUtil(
             String.format("No existe un usuario con el DNI: %s", dni),
             HttpStatus.NOT_FOUND.value()
@@ -62,9 +62,9 @@ public class UserController {
           HttpStatus.NOT_FOUND
         );
       }
-      return new ResponseEntity<User>(userFound, HttpStatus.OK);
+      return new ResponseEntity<>(userFound, HttpStatus.OK);
     } catch (Exception ex) {
-      return new ResponseEntity<MessageResponseUtil>(
+      return new ResponseEntity<>(
         new MessageResponseUtil(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
         HttpStatus.INTERNAL_SERVER_ERROR
       );
@@ -73,20 +73,20 @@ public class UserController {
 
   @Secured(value = "ROLE_ADMIN")
   @PostMapping(value = "")
-  public ResponseEntity<?> saveUser(@RequestBody User user) {
+  public ResponseEntity<?> saveUser(@RequestBody UserVO userVO) {
     try {
-      if (Objects.isNull(userService.findByDni(user.getDni()))) {
-        return new ResponseEntity<User>(userService.save(user), HttpStatus.CREATED);
+      if (Objects.isNull(userService.findByDni(userVO.getDni()))) {
+        return new ResponseEntity<>(userService.save(userVO.getUserEntity()), HttpStatus.CREATED);
       }
-      return new ResponseEntity<MessageResponseUtil>(
+      return new ResponseEntity<>(
         new MessageResponseUtil(
-          String.format("Ya existe un usuario con el DNI: %s", user.getDni()),
+          String.format("Ya existe un usuario con el DNI: %s", userVO.getDni()),
           HttpStatus.CONFLICT.value()
         ),
         HttpStatus.CONFLICT
       );
     } catch (Exception ex) {
-      return new ResponseEntity<MessageResponseUtil>(
+      return new ResponseEntity<>(
         new MessageResponseUtil(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
         HttpStatus.INTERNAL_SERVER_ERROR
       );
@@ -108,12 +108,12 @@ public class UserController {
         HttpStatus.CONFLICT
       );
       userService.savePhoto(dni, file);
-      return new ResponseEntity<MessageResponseUtil>(
+      return new ResponseEntity<>(
         new MessageResponseUtil("Foto guardada con éxito",  HttpStatus.CREATED.value()),
         HttpStatus.CREATED
       );
     } catch (Exception ex) {
-      return new ResponseEntity<MessageResponseUtil>(
+      return new ResponseEntity<>(
         new MessageResponseUtil(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
         HttpStatus.INTERNAL_SERVER_ERROR
       );
@@ -132,9 +132,9 @@ public class UserController {
         case "png" -> MediaType.IMAGE_PNG;
         default -> MediaType.ALL;
       });
-      return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
+      return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     } catch (MalformedURLException ex) {
-      return new ResponseEntity<MessageResponseUtil>(
+      return new ResponseEntity<>(
         new MessageResponseUtil(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
         HttpStatus.INTERNAL_SERVER_ERROR
       );
@@ -143,20 +143,20 @@ public class UserController {
 
   @Secured(value = "ROLE_ADMIN")
   @PutMapping(value = "")
-  public ResponseEntity<?> updateUser(@RequestBody User user) {
+  public ResponseEntity<?> updateUser(@RequestBody UserVO userVO) {
     try {
-      if (Objects.isNull(userService.findByDni(user.getDni()))) {
-        return new ResponseEntity<MessageResponseUtil>(
+      if (Objects.isNull(userService.findByDni(userVO.getDni()))) {
+        return new ResponseEntity<>(
           new MessageResponseUtil(
-            String.format("No existe un usuario con el DNI: %s", user.getDni()),
+            String.format("No existe un usuario con el DNI: %s", userVO.getDni()),
             HttpStatus.CONFLICT.value()
           ),
           HttpStatus.CONFLICT
         );
       }
-      return new ResponseEntity<User>(userService.save(user), HttpStatus.OK);
+      return new ResponseEntity<>(userService.save(userVO.getUserEntity()), HttpStatus.OK);
     } catch (Exception ex) {
-      return new ResponseEntity<MessageResponseUtil>(
+      return new ResponseEntity<>(
         new MessageResponseUtil(ex.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
         HttpStatus.INTERNAL_SERVER_ERROR
       );
@@ -168,7 +168,7 @@ public class UserController {
   public ResponseEntity<?> disableUser(@PathVariable(value = "dni") String dni) {
     try {
       if (userService.disable(dni)) {
-        return new ResponseEntity<MessageResponseUtil>(
+        return new ResponseEntity<>(
           new MessageResponseUtil(
             String.format("Usuario con DNI: %s, deshabilitado con éxito", dni),
             HttpStatus.OK.value()
@@ -176,7 +176,7 @@ public class UserController {
           HttpStatus.OK
         );
       }
-      return new ResponseEntity<MessageResponseUtil>(
+      return new ResponseEntity<>(
         new MessageResponseUtil(
           String.format("No se pudo deshabilitar al usuario con DNI: %s", dni),
           HttpStatus.CONFLICT.value()
@@ -184,7 +184,7 @@ public class UserController {
         HttpStatus.CONFLICT
       );
     } catch (Exception ex) {
-      return new ResponseEntity<MessageResponseUtil>(
+      return new ResponseEntity<>(
         new MessageResponseUtil(ex.getCause().toString(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
         HttpStatus.INTERNAL_SERVER_ERROR
       );

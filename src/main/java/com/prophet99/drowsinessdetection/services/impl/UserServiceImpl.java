@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserServiceImpl implements IUserService {
@@ -40,6 +41,9 @@ public class UserServiceImpl implements IUserService {
   public void savePhoto(String dni, MultipartFile file) throws IOException {
     Path uploadDir = Paths.get("userphotos");
     if (Files.notExists(uploadDir)) Files.createDirectory(uploadDir);
+    if (Objects.isNull(file.getOriginalFilename()) || file.getOriginalFilename().isBlank()) {
+      throw new IOException("Invalid filie name");
+    }
     String fileExtension = file.getOriginalFilename().split("\\.")[
       file.getOriginalFilename().split("\\.").length - 1
     ];

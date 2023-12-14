@@ -11,4 +11,5 @@ public interface ICustomStatisticsRepository {
   List<StatisticsWithUserDTO> findByUserDNI(String userDNI, String searchParam);
   Optional<StatisticsWithUserDTO> findById(String id);
   Statistics save(Statistics statistics);
+  void deleteById(String id);
 }
