@@ -199,7 +199,10 @@ public class CustomStatisticsRepositoryImpl implements ICustomStatisticsReposito
 
   @Override
   public Statistics save(Statistics statistics) {
-    statistics.setRegisterDate(LocalDateTime.now());
+    // THE SERVER IS LOCATED IN US West (Oregon, USA)
+    ZoneId peruZone = ZoneId.of("America/Lima");
+    LocalDateTime peruDateTime = LocalDateTime.now(peruZone);
+    statistics.setRegisterDate(peruDateTime);
     return mongoTemplate.save(statistics);
   }
 
